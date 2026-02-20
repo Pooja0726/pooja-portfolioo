@@ -1,136 +1,110 @@
 import { useState, useEffect } from "react";
 
-/* ─────────────── DATA ─────────────── */
-const NAV_LINKS = ["Home", "About", "Experience", "Projects", "Skills", "Contact"];
+/* ── CONSTANTS ── */
+const NAV = ["Home", "About", "Experience", "Projects", "Skills", "Contact"];
 
 const PROJECTS = [
   {
-    id: 1,
-    emoji: "🧠",
+    id: 1, emoji: "🧠",
     title: "Facial Expression Recognition",
-    subtitle: "CNN + SVM · WCSC 2025 Published",
-    desc: "Hybrid model using VGG16 + SVM achieving 84.40% accuracy on 35K+ images. Real-time webcam demo built with Streamlit.",
+    subtitle: "CNN + SVM · Published Research",
+    desc: "Hybrid deep learning model combining VGG16 feature extraction with SVM classification. Achieved 84.40% accuracy and 0.85 F1-score on 35,000+ images across CK+ and FER-2013 datasets.",
     tags: ["VGG16", "SVM", "TensorFlow", "Streamlit", "OpenCV"],
-    stat: "84.4% Accuracy",
-    color: "#a855f7",
-    published: true,
+    stat: "84.4% Accuracy", stat2: "WCSC 2025",
+    color: "#0ea5e9", published: true,
   },
   {
-    id: 2,
-    emoji: "⚗️",
+    id: 2, emoji: "⚗️",
     title: "Chemical Equipment Visualizer",
     subtitle: "Django · React · PyQt5",
-    desc: "Industrial sensor data visualization with real-time charts, automated PDF reports, and a standalone Windows .exe via PyInstaller.",
+    desc: "Full-stack industrial data visualization platform with real-time sensor charts, automated PDF report generation, and a standalone Windows desktop client packaged via PyInstaller.",
     tags: ["Django REST", "React", "PyQt5", "Railway", "PyInstaller"],
-    stat: "Cross-platform App",
-    color: "#06b6d4",
-    published: false,
+    stat: "Cross-Platform", stat2: "Desktop + Web",
+    color: "#3b82f6", published: false,
   },
   {
-    id: 3,
-    emoji: "📊",
-    title: "OLA Analytics Dashboard",
+    id: 3, emoji: "📊",
+    title: "OLA Business Analytics Dashboard",
     subtitle: "Power BI · SQL · Excel",
-    desc: "Ride-sharing analytics on 50K+ records delivering insights on bookings, revenue, cancellations and driver satisfaction.",
-    tags: ["Power BI", "SQL", "Excel"],
-    stat: "+25% Efficiency",
-    color: "#f59e0b",
-    published: false,
+    desc: "Comprehensive ride-sharing analytics dashboard analyzing 50,000+ trip records. Delivered executive-level insights on revenue, cancellations, and satisfaction metrics.",
+    tags: ["Power BI", "SQL", "Excel", "Data Analytics"],
+    stat: "+25% Efficiency", stat2: "50K+ Records",
+    color: "#06b6d4", published: false,
   },
 ];
 
 const SKILLS = {
-  Languages: { icon: "💬", color: "#a855f7", items: ["Python", "Java", "C++", "SQL", "JavaScript", "HTML", "CSS"] },
-  Frameworks: { icon: "🛠️", color: "#06b6d4", items: ["Django", "React", "Flutter", "TensorFlow", "Keras", "Streamlit", "Power BI"] },
-  "Libraries & APIs": { icon: "📦", color: "#f59e0b", items: ["Pandas", "NumPy", "Matplotlib", "Seaborn", "Scikit-learn", "Gemini API"] },
-  "AI / ML": { icon: "🤖", color: "#10b981", items: ["Deep Learning", "Machine Learning", "Generative AI", "RAG", "Ollama", "GCP", "Computer Vision"] },
+  "Languages": { icon: "💻", color: "#0ea5e9", items: ["Python", "Java", "C++", "SQL", "JavaScript", "HTML", "CSS"] },
+  "Frameworks & Tools": { icon: "🛠️", color: "#3b82f6", items: ["Django", "React", "Flutter", "TensorFlow", "Keras", "Streamlit", "Power BI", "Hugging Face"] },
+  "Libraries & APIs": { icon: "📦", color: "#06b6d4", items: ["Pandas", "NumPy", "Matplotlib", "Seaborn", "Scikit-learn", "Gemini API"] },
+  "AI / ML Expertise": { icon: "🤖", color: "#0284c7", items: ["Deep Learning", "Machine Learning", "Generative AI", "RAG", "Ollama", "GCP", "Computer Vision"] },
 };
 
-/* ─────────────── STAR FIELD ─────────────── */
-function Stars() {
-  const stars = Array.from({ length: 120 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2.5 + 0.5,
-    delay: Math.random() * 4,
-    dur: Math.random() * 3 + 2,
-  }));
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-      {stars.map((s) => (
-        <div key={s.id} style={{
-          position: "absolute", left: `${s.x}%`, top: `${s.y}%`,
-          width: s.size, height: s.size, borderRadius: "50%",
-          background: "white", opacity: 0,
-          animation: `twinkle ${s.dur}s ${s.delay}s infinite alternate ease-in-out`,
-        }} />
-      ))}
-    </div>
-  );
-}
+/* ── STYLES ── */
+const C = {
+  bg: "#f0f9ff",
+  bg2: "#e0f2fe",
+  white: "#ffffff",
+  navy: "#0c1a3a",
+  ink: "#1e3a5f",
+  ink2: "#334d6e",
+  muted: "#64748b",
+  blue: "#0ea5e9",
+  blue2: "#3b82f6",
+  blueDark: "#0284c7",
+  accent: "#06b6d4",
+  border: "#bae6fd",
+  border2: "#e0f2fe",
+  cardBg: "rgba(255,255,255,0.85)",
+};
 
-/* ─────────────── FLOATING ORBS ─────────────── */
-function Orbs() {
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-      <div style={{ position: "absolute", width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)", top: "-150px", left: "-100px", animation: "float1 8s ease-in-out infinite alternate" }} />
-      <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%)", bottom: "10%", right: "-80px", animation: "float2 10s ease-in-out infinite alternate" }} />
-      <div style={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)", top: "40%", left: "30%", animation: "float3 12s ease-in-out infinite alternate" }} />
-    </div>
-  );
-}
-
-/* ─────────────── GRID LINES ─────────────── */
-function GridLines() {
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.04 }}>
-      <div style={{ width: "100%", height: "100%", backgroundImage: "linear-gradient(rgba(168,85,247,1) 1px, transparent 1px), linear-gradient(90deg, rgba(168,85,247,1) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
-    </div>
-  );
-}
-
-/* ─────────────── NAV ─────────────── */
-function Nav({ active, setPage }) {
+/* ── NAV ── */
+function Nav({ page, setPage }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const fn = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
   return (
     <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-      padding: "0 60px", height: 70,
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      background: scrolled ? "rgba(7,5,20,0.9)" : "transparent",
-      backdropFilter: scrolled ? "blur(20px)" : "none",
-      borderBottom: scrolled ? "1px solid rgba(168,85,247,0.2)" : "none",
-      transition: "all 0.4s ease",
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 999,
+      height: 68, display: "flex", alignItems: "center",
+      justifyContent: "space-between", padding: "0 64px",
+      background: scrolled ? "rgba(255,255,255,0.95)" : "rgba(240,249,255,0.9)",
+      backdropFilter: "blur(20px)",
+      borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
+      boxShadow: scrolled ? "0 4px 24px rgba(14,165,233,0.08)" : "none",
+      transition: "all 0.3s ease",
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      {/* Logo */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{
           width: 38, height: 38, borderRadius: 10,
-          background: "linear-gradient(135deg, #a855f7, #06b6d4)",
+          background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontFamily: "serif", fontSize: 18, fontWeight: 900, color: "white",
-          boxShadow: "0 0 20px rgba(168,85,247,0.5)",
-        }}>P</div>
-        <span style={{ fontFamily: "'Exo 2', sans-serif", fontWeight: 700, fontSize: 17, color: "white", letterSpacing: "-0.01em" }}>Pooja Sahu</span>
+          color: "white", fontWeight: 800, fontSize: 16,
+          fontFamily: "Georgia, serif",
+          boxShadow: `0 4px 12px rgba(14,165,233,0.35)`,
+        }}>PS</div>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16, color: C.navy }}>Pooja Sahu</span>
       </div>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        {NAV_LINKS.map((l) => (
+
+      {/* Links */}
+      <div style={{ display: "flex", gap: 4 }}>
+        {NAV.map(l => (
           <button key={l} onClick={() => setPage(l)} style={{
-            background: active === l ? "rgba(168,85,247,0.2)" : "transparent",
-            border: active === l ? "1px solid rgba(168,85,247,0.5)" : "1px solid transparent",
-            color: active === l ? "#c084fc" : "rgba(255,255,255,0.6)",
-            padding: "6px 16px", borderRadius: 8,
-            fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
+            background: page === l ? `linear-gradient(135deg, ${C.blue}, ${C.blue2})` : "transparent",
+            border: "none", borderRadius: 8,
+            color: page === l ? "white" : C.ink2,
+            padding: "7px 16px",
+            fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 500,
             cursor: "pointer", transition: "all 0.2s",
+            boxShadow: page === l ? `0 4px 12px rgba(14,165,233,0.3)` : "none",
           }}
-            onMouseEnter={e => { if (active !== l) { e.target.style.color = "white"; e.target.style.borderColor = "rgba(168,85,247,0.3)"; } }}
-            onMouseLeave={e => { if (active !== l) { e.target.style.color = "rgba(255,255,255,0.6)"; e.target.style.borderColor = "transparent"; } }}
+            onMouseEnter={e => { if (page !== l) { e.target.style.background = C.bg2; e.target.style.color = C.blue; } }}
+            onMouseLeave={e => { if (page !== l) { e.target.style.background = "transparent"; e.target.style.color = C.ink2; } }}
           >{l}</button>
         ))}
       </div>
@@ -138,182 +112,208 @@ function Nav({ active, setPage }) {
   );
 }
 
-/* ─────────────── PAGE: HOME ─────────────── */
+/* ── HOME PAGE ── */
 function HomePage({ setPage }) {
-  const roles = ["AI/ML Engineer", "Published Researcher", "Full-Stack Developer", "Deep Learning Enthusiast"];
+  const roles = ["AI/ML Engineer", "Published Researcher", "Deep Learning Specialist", "Full-Stack Developer"];
   const [roleIdx, setRoleIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
     const t = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => { setRoleIdx(i => (i + 1) % roles.length); setVisible(true); }, 400);
-    }, 2500);
+      setShow(false);
+      setTimeout(() => { setRoleIdx(i => (i + 1) % roles.length); setShow(true); }, 350);
+    }, 2800);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", padding: "100px 60px 60px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1300, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", padding: "88px 64px 60px", position: "relative", overflow: "hidden" }}>
+
+      {/* Background decoration */}
+      <div style={{ position: "absolute", top: -100, right: -100, width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: -50, left: -80, width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, rgba(6,182,212,0.07) 0%, transparent 70%)`, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: "20%", right: "8%", width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)`, pointerEvents: "none" }} />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr auto", gap: 80, alignItems: "center" }}>
 
         {/* LEFT */}
         <div>
-          {/* Available badge */}
+          {/* Status badge */}
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 32,
-            background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.4)",
-            padding: "7px 18px", borderRadius: 100,
-            animation: "fadeUp 0.6s ease both",
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(14,165,233,0.08)", border: `1px solid rgba(14,165,233,0.25)`,
+            borderRadius: 100, padding: "7px 16px", marginBottom: 28,
+            animation: "fadeUp 0.5s ease both",
           }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#a855f7", display: "inline-block", boxShadow: "0 0 8px #a855f7", animation: "pulse 2s infinite" }} />
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#c084fc", letterSpacing: "0.1em", textTransform: "uppercase" }}>Open to Opportunities</span>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 0 3px rgba(34,197,94,0.2)" }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: C.blueDark, letterSpacing: "0.05em" }}>Available for Internships & Opportunities</span>
           </div>
 
-          {/* Greeting */}
-          <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.5)", marginBottom: 8, animation: "fadeUp 0.6s 0.1s ease both", opacity: 0, animationFillMode: "forwards" }}>Hello! I Am</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: C.muted, marginBottom: 6, animation: "fadeUp 0.5s 0.08s ease both", opacity: 0, animationFillMode: "forwards" }}>Hello, I'm</p>
 
-          {/* Name */}
           <h1 style={{
-            fontFamily: "'Exo 2', sans-serif",
-            fontSize: "clamp(52px, 7vw, 88px)",
-            fontWeight: 900, lineHeight: 1.0,
-            letterSpacing: "-0.03em", marginBottom: 16,
-            animation: "fadeUp 0.6s 0.15s ease both", opacity: 0, animationFillMode: "forwards",
-            background: "linear-gradient(135deg, #ffffff 0%, #e9d5ff 50%, #a855f7 100%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontFamily: "Georgia, 'Times New Roman', serif",
+            fontSize: "clamp(48px, 6vw, 80px)", fontWeight: 700,
+            color: C.navy, lineHeight: 1.05, letterSpacing: "-0.02em",
+            marginBottom: 12,
+            animation: "fadeUp 0.5s 0.12s ease both", opacity: 0, animationFillMode: "forwards",
           }}>
-            Pooja<br />Sahu
+            Pooja Sahu
           </h1>
 
-          {/* Role rotator */}
-          <div style={{ marginBottom: 24, height: 36, animation: "fadeUp 0.6s 0.2s ease both", opacity: 0, animationFillMode: "forwards" }}>
+          {/* Animated role */}
+          <div style={{ marginBottom: 20, height: 38, animation: "fadeUp 0.5s 0.18s ease both", opacity: 0, animationFillMode: "forwards" }}>
             <span style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 600,
-              color: "#06b6d4",
-              transition: "opacity 0.4s, transform 0.4s",
-              opacity: visible ? 1 : 0,
-              display: "inline-block",
-              transform: visible ? "translateY(0)" : "translateY(-10px)",
-            }}>
-              {roles[roleIdx]}
-            </span>
+              fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 600,
+              color: C.blue, display: "inline-block",
+              transition: "opacity 0.35s, transform 0.35s",
+              opacity: show ? 1 : 0,
+              transform: show ? "translateY(0)" : "translateY(-8px)",
+            }}>{roles[roleIdx]}</span>
           </div>
 
-          {/* Uni badge */}
+          {/* University */}
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 28,
-            background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.3)",
-            padding: "10px 18px", borderRadius: 12,
-            animation: "fadeUp 0.6s 0.25s ease both", opacity: 0, animationFillMode: "forwards",
+            display: "inline-flex", alignItems: "center", gap: 12, marginBottom: 24,
+            background: C.white, border: `1px solid ${C.border}`,
+            borderRadius: 12, padding: "10px 18px",
+            boxShadow: "0 2px 12px rgba(14,165,233,0.1)",
+            animation: "fadeUp 0.5s 0.22s ease both", opacity: 0, animationFillMode: "forwards",
           }}>
-            <span style={{ fontSize: 20 }}>🎓</span>
+            <span style={{ fontSize: 22 }}>🎓</span>
             <div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 700, color: "#67e8f9" }}>Vellore Institute of Technology</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>B.Tech CSE (AI-ML) · CGPA 8.87/10 · 2023–2027</div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 700, color: C.navy }}>Vellore Institute of Technology, Bhopal</div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: C.muted }}>B.Tech CSE (AI-ML) · CGPA: 8.87/10 · 2023 – 2027</div>
             </div>
           </div>
 
           <p style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.55)",
-            lineHeight: 1.85, marginBottom: 40, maxWidth: 480,
-            animation: "fadeUp 0.6s 0.3s ease both", opacity: 0, animationFillMode: "forwards",
+            fontFamily: "'DM Sans', sans-serif", fontSize: 15.5, color: C.ink2,
+            lineHeight: 1.85, maxWidth: 560, marginBottom: 36,
+            animation: "fadeUp 0.5s 0.26s ease both", opacity: 0, animationFillMode: "forwards",
           }}>
-            AI/ML student with 1+ years of Python development experience. Published researcher at WCSC 2025. Building end-to-end ML solutions, RESTful APIs, and analytics dashboards. 100+ LeetCode problems solved.
+            AI/ML engineer with <strong style={{ color: C.navy }}>1+ years</strong> of Python development experience. <strong style={{ color: C.navy }}>Published researcher</strong> at WCSC 2025 specializing in deep learning, computer vision, and full-stack development. 100+ LeetCode problems solved.
           </p>
 
-          {/* Buttons */}
-          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", animation: "fadeUp 0.6s 0.35s ease both", opacity: 0, animationFillMode: "forwards" }}>
+          {/* CTA Buttons */}
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 36, animation: "fadeUp 0.5s 0.3s ease both", opacity: 0, animationFillMode: "forwards" }}>
             <button onClick={() => setPage("Projects")} style={{
-              background: "linear-gradient(135deg, #a855f7, #7c3aed)",
-              border: "none", color: "white", padding: "13px 28px", borderRadius: 12,
-              fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, fontWeight: 700,
-              cursor: "pointer", boxShadow: "0 0 30px rgba(168,85,247,0.4)", transition: "all 0.3s",
+              background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`,
+              border: "none", color: "white",
+              padding: "13px 30px", borderRadius: 10,
+              fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700,
+              cursor: "pointer", boxShadow: `0 6px 20px rgba(14,165,233,0.35)`,
+              transition: "all 0.25s", display: "flex", alignItems: "center", gap: 8,
             }}
-              onMouseEnter={e => { e.target.style.transform = "translateY(-3px)"; e.target.style.boxShadow = "0 0 50px rgba(168,85,247,0.6)"; }}
-              onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 0 30px rgba(168,85,247,0.4)"; }}
-            >
-              View My Work ✦
-            </button>
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 10px 28px rgba(14,165,233,0.45)`; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 6px 20px rgba(14,165,233,0.35)`; }}
+            >View Projects →</button>
             <button onClick={() => setPage("Contact")} style={{
-              background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.2)",
-              color: "white", padding: "13px 28px", borderRadius: 12,
-              fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, fontWeight: 600,
-              cursor: "pointer", transition: "all 0.3s",
+              background: C.white, border: `1.5px solid ${C.border}`,
+              color: C.ink, padding: "13px 30px", borderRadius: 10,
+              fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600,
+              cursor: "pointer", transition: "all 0.25s",
+              boxShadow: "0 2px 8px rgba(14,165,233,0.08)",
             }}
-              onMouseEnter={e => { e.target.style.borderColor = "rgba(168,85,247,0.6)"; e.target.style.background = "rgba(168,85,247,0.1)"; }}
-              onMouseLeave={e => { e.target.style.borderColor = "rgba(255,255,255,0.2)"; e.target.style.background = "rgba(255,255,255,0.07)"; }}
-            >
-              Contact Me →
-            </button>
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.ink; e.currentTarget.style.transform = "translateY(0)"; }}
+            >Get in Touch</button>
+            <a href="mailto:sahupooja43890@gmail.com" style={{
+              background: "transparent", border: `1.5px solid ${C.border}`,
+              color: C.muted, padding: "13px 24px", borderRadius: 10,
+              fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500,
+              textDecoration: "none", transition: "all 0.25s", display: "inline-flex", alignItems: "center", gap: 6,
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
+            >✉ Email Me</a>
           </div>
 
-          {/* Socials row */}
-          <div style={{ display: "flex", gap: 10, marginTop: 28, flexWrap: "wrap", animation: "fadeUp 0.6s 0.4s ease both", opacity: 0, animationFillMode: "forwards" }}>
+          {/* Social Links */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", animation: "fadeUp 0.5s 0.34s ease both", opacity: 0, animationFillMode: "forwards" }}>
             {[
-              ["in", "LinkedIn", "#0077b5", "https://www.linkedin.com/in/pooja-sahu-54b5a7281/"],
-              ["⌥", "GitHub", "#a855f7", "https://github.com/Pooja0726"],
-              ["◈", "LeetCode", "#f59e0b", "https://leetcode.com/u/phius12345/"],
-              ["📞", "+91 9302445014", "#10b981", "tel:9302445014"],
-            ].map(([icon, label, color, url]) => (
-              <a key={label} href={url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                <span style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  padding: "6px 14px", borderRadius: 8,
-                  background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, fontWeight: 500,
-                  color: "rgba(255,255,255,0.7)", cursor: "pointer", transition: "all 0.2s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${color}20`; e.currentTarget.style.borderColor = `${color}50`; e.currentTarget.style.color = color; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
-                >
-                  <span style={{ color }}>{icon}</span> {label}
-                </span>
-              </a>
+              ["💼", "LinkedIn", "https://www.linkedin.com/in/pooja-sahu-54b5a7281/"],
+              ["⌥", "GitHub", "https://github.com/Pooja0726"],
+              ["◈", "LeetCode", "https://leetcode.com/u/phius12345/"],
+            ].map(([icon, label, url]) => (
+              <a key={label} href={url} target="_blank" rel="noopener noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 7,
+                padding: "8px 16px", borderRadius: 8,
+                background: C.white, border: `1px solid ${C.border}`,
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600,
+                color: C.ink2, textDecoration: "none",
+                boxShadow: "0 2px 8px rgba(14,165,233,0.07)",
+                transition: "all 0.2s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 6px 16px rgba(14,165,233,0.15)`; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.ink2; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(14,165,233,0.07)"; }}
+              ><span style={{ color: C.blue }}>{icon}</span> {label}</a>
             ))}
           </div>
         </div>
 
-        {/* RIGHT — avatar + stats */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
-          {/* Avatar */}
-          <div style={{ position: "relative", animation: "fadeUp 0.6s 0.45s ease both", opacity: 0, animationFillMode: "forwards" }}>
+        {/* RIGHT — Photo + Stats */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, animation: "fadeUp 0.5s 0.38s ease both", opacity: 0, animationFillMode: "forwards" }}>
+
+          {/* Photo frame */}
+          <div style={{ position: "relative" }}>
+            {/* Decorative ring */}
+            <div style={{
+              position: "absolute", inset: -8, borderRadius: "50%",
+              background: `linear-gradient(135deg, ${C.blue}, ${C.accent}, ${C.blue2})`,
+              padding: 3,
+              animation: "spin 8s linear infinite",
+            }}>
+              <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: C.bg }} />
+            </div>
+            {/* Photo circle */}
             <div style={{
               width: 220, height: 220, borderRadius: "50%",
-              background: "linear-gradient(135deg, #a855f7 0%, #06b6d4 50%, #a855f7 100%)",
-              padding: 4, boxShadow: "0 0 60px rgba(168,85,247,0.5), 0 0 120px rgba(168,85,247,0.2)",
-              animation: "rotateBorder 6s linear infinite",
+              background: `linear-gradient(135deg, ${C.bg2}, ${C.border2})`,
+              border: `4px solid ${C.white}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              position: "relative", zIndex: 1,
+              boxShadow: `0 20px 60px rgba(14,165,233,0.2)`,
+              overflow: "hidden",
+              fontSize: 90,
             }}>
-              <div style={{
-                width: "100%", height: "100%", borderRadius: "50%",
-                background: "linear-gradient(135deg, #1e1040, #0f0a2e)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 80,
-              }}>👩‍💻</div>
+              {/* Replace the emoji below with your actual photo:
+                  <img src="/photo.jpg" style={{width:"100%",height:"100%",objectFit:"cover"}} />
+              */}
+              👩‍💻
             </div>
-            {/* Orbiting dot */}
-            <div style={{ position: "absolute", inset: -16, borderRadius: "50%", border: "2px dashed rgba(168,85,247,0.3)", animation: "orbit 8s linear infinite" }}>
-              <div style={{ position: "absolute", top: -5, left: "50%", width: 10, height: 10, borderRadius: "50%", background: "#a855f7", boxShadow: "0 0 10px #a855f7", transform: "translateX(-50%)" }} />
-            </div>
+            {/* Published badge */}
+            <div style={{
+              position: "absolute", bottom: 10, right: -10, zIndex: 2,
+              background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`,
+              color: "white", borderRadius: 100,
+              padding: "5px 12px", fontSize: 11, fontWeight: 700,
+              fontFamily: "'DM Sans', sans-serif",
+              boxShadow: `0 4px 12px rgba(14,165,233,0.4)`,
+              border: `2px solid white`,
+            }}>★ Published</div>
           </div>
 
-          {/* Stats cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, width: "100%", maxWidth: 400, animation: "fadeUp 0.6s 0.55s ease both", opacity: 0, animationFillMode: "forwards" }}>
+          {/* Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, width: 280 }}>
             {[
-              { val: "8.87", label: "CGPA", color: "#a855f7", glow: "rgba(168,85,247,0.3)" },
-              { val: "84.4%", label: "Research Accuracy", color: "#06b6d4", glow: "rgba(6,182,212,0.3)" },
-              { val: "100+", label: "LeetCode Solved", color: "#f59e0b", glow: "rgba(245,158,11,0.3)" },
-              { val: "30%", label: "Efficiency Improved", color: "#10b981", glow: "rgba(16,185,129,0.3)" },
-            ].map((s) => (
+              { val: "8.87", label: "CGPA", sub: "VIT Bhopal", color: C.blue },
+              { val: "84.4%", label: "Accuracy", sub: "WCSC 2025", color: C.blue2 },
+              { val: "100+", label: "LeetCode", sub: "Problems", color: C.accent },
+              { val: "30%", label: "Impact", sub: "At Amasqis.ai", color: C.blueDark },
+            ].map(s => (
               <div key={s.label} style={{
-                background: "rgba(255,255,255,0.04)", border: `1px solid ${s.color}40`,
-                borderRadius: 16, padding: "20px 16px", textAlign: "center",
-                boxShadow: `0 0 20px ${s.glow}`, transition: "transform 0.3s, box-shadow 0.3s",
+                background: C.white, border: `1px solid ${C.border}`,
+                borderRadius: 14, padding: "16px 14px", textAlign: "center",
+                boxShadow: `0 4px 16px rgba(14,165,233,0.08)`,
+                transition: "transform 0.25s, box-shadow 0.25s",
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 0 40px ${s.glow}`; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 20px ${s.glow}`; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 8px 24px rgba(14,165,233,0.15)`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 16px rgba(14,165,233,0.08)`; }}
               >
-                <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 28, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.val}</div>
-                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>{s.label}</div>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: 26, fontWeight: 700, color: s.color, lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: C.navy, marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: C.muted, marginTop: 2 }}>{s.sub}</div>
               </div>
             ))}
           </div>
@@ -323,318 +323,371 @@ function HomePage({ setPage }) {
   );
 }
 
-/* ─────────────── PAGE: ABOUT ─────────────── */
+/* ── ABOUT PAGE ── */
 function AboutPage() {
   return (
-    <div style={{ minHeight: "100vh", padding: "120px 60px 80px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <PageHeader num="01" title="About" accent="Me" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }}>
-          <div>
-            <GlowCard color="#a855f7">
-              <div style={{ fontSize: 48, marginBottom: 20 }}>👩‍💻</div>
-              <h3 style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 24, fontWeight: 800, color: "white", marginBottom: 16 }}>Pooja Sahu</h3>
-              <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.85, marginBottom: 20 }}>
-                AI/ML student at Vellore Institute of Technology, Bhopal with a CGPA of 8.87. Passionate about building intelligent systems that solve real-world problems — from published computer vision research to full-stack production apps.
-              </p>
-              <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.85 }}>
-                I specialize in deep learning, generative AI, and end-to-end ML pipelines. Strong problem solver with 100+ LeetCode solutions and collaborative Agile experience.
-              </p>
-            </GlowCard>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <GlowCard color="#06b6d4" padding="24px 28px">
-              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <span style={{ fontSize: 32 }}>🎓</span>
-                <div>
-                  <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 17, fontWeight: 700, color: "white" }}>Vellore Institute of Technology</div>
-                  <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: "#67e8f9" }}>B.Tech CSE (AI-ML) · 2023 – 2027</div>
-                  <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Bhopal, Madhya Pradesh · CGPA: 8.87/10</div>
-                </div>
-              </div>
-              <div style={{ marginTop: 16, background: "rgba(6,182,212,0.1)", borderRadius: 8, height: 6, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: "88.7%", background: "linear-gradient(to right, #06b6d4, #a855f7)", borderRadius: 8 }} />
-              </div>
-            </GlowCard>
+    <PageLayout>
+      <SectionHeader num="01" title="About Me" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.1fr", gap: 48 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Card>
+            <div style={{ fontSize: 44, marginBottom: 16 }}>👩‍💻</div>
+            <h3 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, color: C.navy, marginBottom: 12 }}>Pooja Sahu</h3>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: C.ink2, lineHeight: 1.85, marginBottom: 14 }}>
+              A passionate AI/ML engineer currently pursuing B.Tech in Computer Science (AI-ML) at VIT Bhopal. I bridge the gap between research and real-world applications — from a published computer vision paper to production-grade full-stack systems.
+            </p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: C.ink2, lineHeight: 1.85 }}>
+              My expertise spans deep learning, generative AI, end-to-end ML pipelines, and RESTful API development. I thrive in collaborative environments and bring strong problem-solving skills backed by 100+ LeetCode solutions.
+            </p>
+          </Card>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {[
-              { icon: "🔬", label: "Publication", val: "WCSC 2025 — Facial Expression Recognition", color: "#a855f7" },
-              { icon: "💼", label: "Experience", val: "AI/ML Intern at Amasqis.ai (Mar–Sep 2025)", color: "#f59e0b" },
-              { icon: "⚡", label: "Specialization", val: "Deep Learning · Generative AI · Computer Vision", color: "#10b981" },
-              { icon: "📍", label: "Location", val: "Bhopal, Madhya Pradesh, India", color: "#ec4899" },
-            ].map((item) => (
-              <GlowCard key={item.label} color={item.color} padding="18px 22px">
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: `${item.color}20`, border: `1px solid ${item.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{item.icon}</div>
-                  <div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 10, fontWeight: 700, color: item.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>{item.label}</div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>{item.val}</div>
-                  </div>
+              { icon: "🏆", val: "WCSC 2025", label: "Publication" },
+              { icon: "⭐", val: "8.87/10", label: "CGPA" },
+              { icon: "💡", val: "100+", label: "LeetCode" },
+              { icon: "🚀", val: "1+ Year", label: "Experience" },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: `linear-gradient(135deg, rgba(14,165,233,0.06), rgba(59,130,246,0.04))`,
+                border: `1px solid ${C.border}`,
+                borderRadius: 12, padding: "16px",
+                display: "flex", alignItems: "center", gap: 12,
+              }}>
+                <span style={{ fontSize: 22 }}>{s.icon}</span>
+                <div>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, color: C.blue }}>{s.val}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: C.muted }}>{s.label}</div>
                 </div>
-              </GlowCard>
+              </div>
             ))}
           </div>
         </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <Card padding="24px 28px">
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>🎓</div>
+              <div>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, color: C.navy }}>Vellore Institute of Technology</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.blue, fontWeight: 600 }}>B.Tech CSE (AI-ML) · 2023 – 2027</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: C.muted }}>Bhopal, Madhya Pradesh · CGPA: 8.87/10</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 16, background: C.bg2, borderRadius: 6, height: 6, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: "88.7%", background: `linear-gradient(to right, ${C.blue}, ${C.blue2})`, borderRadius: 6 }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: C.muted }}>Progress</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: C.blue }}>8.87 / 10</span>
+            </div>
+          </Card>
+
+          {[
+            { icon: "🔬", label: "Research Publication", val: "Facial Expression Recognition — WCSC 2025", color: C.blue },
+            { icon: "💼", label: "Industry Experience", val: "AI/ML Intern at Amasqis.ai · Mar–Sep 2025", color: C.blue2 },
+            { icon: "⚡", label: "Core Expertise", val: "Deep Learning · Generative AI · Computer Vision", color: C.accent },
+            { icon: "📍", label: "Location", val: "Bhopal, Madhya Pradesh, India", color: C.blueDark },
+            { icon: "🎯", label: "Career Goal", val: "AI/ML Engineer at world-class tech companies", color: "#7c3aed" },
+          ].map(item => (
+            <div key={item.label} style={{
+              background: C.white, border: `1px solid ${C.border}`,
+              borderRadius: 12, padding: "14px 18px",
+              display: "flex", alignItems: "center", gap: 14,
+              boxShadow: "0 2px 8px rgba(14,165,233,0.06)",
+              transition: "all 0.2s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = item.color; e.currentTarget.style.boxShadow = `0 4px 16px rgba(14,165,233,0.12)`; e.currentTarget.style.transform = "translateX(4px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "0 2px 8px rgba(14,165,233,0.06)"; e.currentTarget.style.transform = "translateX(0)"; }}
+            >
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: `${item.color}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>{item.icon}</div>
+              <div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: item.color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>{item.label}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: C.navy }}>{item.val}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 
-/* ─────────────── PAGE: EXPERIENCE ─────────────── */
+/* ── EXPERIENCE PAGE ── */
 function ExperiencePage() {
   return (
-    <div style={{ minHeight: "100vh", padding: "120px 60px 80px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <PageHeader num="02" title="Work" accent="Experience" />
-        <GlowCard color="#a855f7" padding="0">
-          <div style={{ padding: "32px 40px", borderBottom: "1px solid rgba(168,85,247,0.2)", background: "rgba(168,85,247,0.05)", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12, background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.4)", padding: "4px 12px", borderRadius: 100 }}>
-                <span style={{ width: 6, height: 6, background: "#a855f7", borderRadius: "50%", boxShadow: "0 0 6px #a855f7" }} />
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#c084fc", textTransform: "uppercase", letterSpacing: "0.1em" }}>AI/ML Intern</span>
+    <PageLayout>
+      <SectionHeader num="02" title="Work Experience" />
+      <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 40 }}>
+        {/* Timeline */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 8 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 22, boxShadow: `0 6px 18px rgba(14,165,233,0.3)` }}>🏢</div>
+          <div style={{ width: 2, flex: 1, background: `linear-gradient(to bottom, ${C.blue}, transparent)`, marginTop: 12, borderRadius: 2 }} />
+        </div>
+
+        <div>
+          <Card padding="0">
+            {/* Header */}
+            <div style={{ padding: "28px 36px", borderBottom: `1px solid ${C.border2}`, background: `linear-gradient(135deg, rgba(14,165,233,0.04), rgba(59,130,246,0.02))` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 7, background: `rgba(14,165,233,0.1)`, border: `1px solid rgba(14,165,233,0.25)`, borderRadius: 100, padding: "4px 12px", marginBottom: 10 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 0 3px rgba(34,197,94,0.2)" }} />
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: C.blue, textTransform: "uppercase", letterSpacing: "0.08em" }}>AI/ML Intern</span>
+                  </div>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: 26, fontWeight: 700, color: C.navy }}>Amasqis.ai</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.blue, fontWeight: 600, marginTop: 3 }}>Financial AI Platform · Fintech</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`, color: "white", fontSize: 11, fontWeight: 700, padding: "5px 14px", borderRadius: 100, marginBottom: 6, fontFamily: "'DM Sans', sans-serif" }}>🌐 Remote</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: C.muted }}>Mar 2025 – Sep 2025</div>
+                </div>
               </div>
-              <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 28, fontWeight: 800, color: "white" }}>Amasqis.ai</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, color: "#06b6d4", fontWeight: 500, marginTop: 4 }}>Financial AI Platform</div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>Mar 2025 – Sep 2025</div>
-              <div style={{ display: "inline-block", background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.4)", color: "#67e8f9", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 100, textTransform: "uppercase", letterSpacing: "0.08em" }}>🌐 Remote</div>
-            </div>
-          </div>
-          <div style={{ padding: "32px 40px" }}>
-            {[
-              { text: "Designed user-friendly interfaces for a financial AI platform serving", highlight: "500+ customers", rest: ", creating 15+ dashboard components presenting insights and metrics." },
-              { text: "Improved decision-making efficiency by", highlight: "30%", rest: " through actionable analytics and clear data visualization layers." },
-              { text: "Collaborated in", highlight: "Agile sprints", rest: " with cross-functional teams to implement AI-driven features and integrate user feedback for enhanced UI/UX." },
-            ].map((point, i) => (
-              <div key={i} style={{ display: "flex", gap: 16, marginBottom: 20 }}>
-                <div style={{ width: 8, height: 8, minWidth: 8, borderRadius: "50%", background: "linear-gradient(135deg, #a855f7, #06b6d4)", marginTop: 8, boxShadow: "0 0 8px rgba(168,85,247,0.6)" }} />
-                <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14.5, color: "rgba(255,255,255,0.65)", lineHeight: 1.75 }}>
-                  {point.text} <span style={{ color: "#c084fc", fontWeight: 700 }}>{point.highlight}</span>{point.rest}
-                </p>
-              </div>
-            ))}
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 28 }}>
-              {["AI Dashboard Design", "Agile / Scrum", "UI/UX", "Data Visualization", "Python"].map(tag => (
-                <span key={tag} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 600, padding: "5px 13px", borderRadius: 100, background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", color: "#c084fc" }}>{tag}</span>
+
+            {/* Body */}
+            <div style={{ padding: "28px 36px" }}>
+              {[
+                { point: "Designed user-friendly interfaces for a financial AI platform serving", hi: "500+ enterprise customers", rest: ", creating 15+ dashboard components presenting customer insights and performance metrics.", icon: "📊" },
+                { point: "Improved client decision-making efficiency by", hi: "30%", rest: " through actionable analytics dashboards and streamlined data visualization layers.", icon: "📈" },
+                { point: "Collaborated in", hi: "Agile sprints", rest: " with cross-functional engineering teams to implement AI-driven features and continuously enhance UI/UX based on user feedback.", icon: "🤝" },
+              ].map((p, i) => (
+                <div key={i} style={{ display: "flex", gap: 16, marginBottom: 20, alignItems: "flex-start" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: `rgba(14,165,233,0.08)`, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, marginTop: 2 }}>{p.icon}</div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: C.ink2, lineHeight: 1.75 }}>
+                    {p.point} <strong style={{ color: C.navy }}>{p.hi}</strong>{p.rest}
+                  </p>
+                </div>
               ))}
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 24, paddingTop: 20, borderTop: `1px solid ${C.border2}` }}>
+                {["AI Dashboard Design", "Agile / Scrum", "UI/UX Design", "Data Visualization", "Python", "React"].map(tag => (
+                  <span key={tag} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, padding: "5px 13px", borderRadius: 100, background: `rgba(14,165,233,0.08)`, border: `1px solid rgba(14,165,233,0.2)`, color: C.blue }}>{tag}</span>
+                ))}
+              </div>
             </div>
-          </div>
-        </GlowCard>
-        <div style={{ marginTop: 32, textAlign: "center" }}>
-          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>
-            ✦ More experience coming as I grow · Open to new opportunities ✦
+          </Card>
+
+          <div style={{ marginTop: 28, padding: "20px 28px", background: `linear-gradient(135deg, rgba(14,165,233,0.04), rgba(6,182,212,0.04))`, border: `1px dashed ${C.border}`, borderRadius: 14, textAlign: "center" }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.muted, fontStyle: "italic" }}>
+              ✦ Actively seeking full-time roles & internships at top-tier technology companies ✦
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 
-/* ─────────────── PAGE: PROJECTS ─────────────── */
+/* ── PROJECTS PAGE ── */
 function ProjectsPage() {
   return (
-    <div style={{ minHeight: "100vh", padding: "120px 60px 80px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <PageHeader num="03" title="Featured" accent="Projects" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }}>
-          {PROJECTS.map((p, i) => (
-            <div key={p.id} style={{
-              background: "rgba(255,255,255,0.03)", border: `1px solid ${p.color}30`,
-              borderRadius: 20, padding: 28,
-              display: "flex", flexDirection: "column", gap: 16,
-              boxShadow: `0 0 30px ${p.color}15`,
-              transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
-              animation: `fadeUp 0.6s ${i * 0.12}s ease both`,
-              opacity: 0, animationFillMode: "forwards",
-              position: "relative", overflow: "hidden",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-8px)"; e.currentTarget.style.boxShadow = `0 0 60px ${p.color}30, 0 20px 60px rgba(0,0,0,0.3)`; e.currentTarget.style.borderColor = `${p.color}60`; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 0 30px ${p.color}15`; e.currentTarget.style.borderColor = `${p.color}30`; }}
-            >
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${p.color}, transparent)` }} />
+    <PageLayout>
+      <SectionHeader num="03" title="Featured Projects" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+        {PROJECTS.map((p, i) => (
+          <div key={p.id} style={{
+            background: C.white, border: `1px solid ${C.border}`,
+            borderRadius: 20, overflow: "hidden",
+            boxShadow: "0 4px 20px rgba(14,165,233,0.07)",
+            transition: "all 0.3s cubic-bezier(0.34,1.3,0.64,1)",
+            animation: `fadeUp 0.5s ${i * 0.1}s ease both`,
+            opacity: 0, animationFillMode: "forwards",
+            display: "flex", flexDirection: "column",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = `0 16px 48px rgba(14,165,233,0.16)`; e.currentTarget.style.borderColor = p.color; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(14,165,233,0.07)"; e.currentTarget.style.borderColor = C.border; }}
+          >
+            {/* Top color bar */}
+            <div style={{ height: 4, background: `linear-gradient(to right, ${p.color}, ${C.blue2})` }} />
+
+            <div style={{ padding: "28px 28px 24px", flex: 1, display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ width: 54, height: 54, borderRadius: 14, background: `${p.color}20`, border: `1px solid ${p.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{p.emoji}</div>
-                {p.published && <div style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)", color: "#fbbf24", fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 100, letterSpacing: "0.06em" }}>★ PUBLISHED</div>}
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: `${p.color}12`, border: `1px solid ${p.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{p.emoji}</div>
+                {p.published && <div style={{ background: `linear-gradient(135deg, #f59e0b, #d97706)`, color: "white", fontSize: 10, fontWeight: 800, padding: "4px 10px", borderRadius: 100, letterSpacing: "0.06em", fontFamily: "'DM Sans', sans-serif" }}>★ PUBLISHED</div>}
               </div>
+
               <div>
-                <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 18, fontWeight: 800, color: "white", lineHeight: 1.25, marginBottom: 6 }}>{p.title}</div>
-                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 600, color: p.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{p.subtitle}</div>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, color: C.navy, lineHeight: 1.3, marginBottom: 4 }}>{p.title}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: p.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>{p.subtitle}</div>
               </div>
-              <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.8, flex: 1 }}>{p.desc}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", background: `${p.color}10`, borderRadius: 10, border: `1px solid ${p.color}25` }}>
-                <span style={{ fontSize: 14 }}>📈</span>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, fontWeight: 700, color: p.color }}>{p.stat}</span>
+
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: C.ink2, lineHeight: 1.8, flex: 1 }}>{p.desc}</p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {[p.stat, p.stat2].map((s, i) => (
+                  <div key={i} style={{ padding: "8px 12px", background: `${p.color}08`, border: `1px solid ${p.color}20`, borderRadius: 8, textAlign: "center" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: p.color }}>{s}</div>
+                  </div>
+                ))}
               </div>
+
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {p.tags.map(t => (
-                  <span key={t} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 10.5, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: `${p.color}15`, border: `1px solid ${p.color}30`, color: p.color }}>{t}</span>
+                  <span key={t} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 6, background: C.bg2, border: `1px solid ${C.border}`, color: C.ink2 }}>{t}</span>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
+    </PageLayout>
   );
 }
 
-/* ─────────────── PAGE: SKILLS ─────────────── */
+/* ── SKILLS PAGE ── */
 function SkillsPage() {
   return (
-    <div style={{ minHeight: "100vh", padding: "120px 60px 80px", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <PageHeader num="04" title="Technical" accent="Skills" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          {Object.entries(SKILLS).map(([cat, { icon, color, items }], i) => (
-            <div key={cat} style={{
-              background: "rgba(255,255,255,0.03)", border: `1px solid ${color}30`,
-              borderRadius: 20, padding: "28px 32px",
-              boxShadow: `0 0 24px ${color}10`,
-              animation: `fadeUp 0.6s ${i * 0.1}s ease both`,
-              opacity: 0, animationFillMode: "forwards",
-              transition: "box-shadow 0.3s, border-color 0.3s",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 0 50px ${color}25`; e.currentTarget.style.borderColor = `${color}55`; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 0 24px ${color}10`; e.currentTarget.style.borderColor = `${color}30`; }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}20`, border: `1px solid ${color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>{icon}</div>
-                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: color }}>{cat}</div>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {items.map(skill => (
-                  <span key={skill} style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12.5, fontWeight: 500,
-                    padding: "6px 14px", borderRadius: 8,
-                    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-                    color: "rgba(255,255,255,0.8)", cursor: "default", transition: "all 0.2s",
-                  }}
-                    onMouseEnter={e => { e.target.style.background = `${color}20`; e.target.style.borderColor = `${color}50`; e.target.style.color = color; e.target.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "rgba(255,255,255,0.8)"; e.target.style.transform = "translateY(0)"; }}
-                  >{skill}</span>
-                ))}
-              </div>
+    <PageLayout>
+      <SectionHeader num="04" title="Technical Skills" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+        {Object.entries(SKILLS).map(([cat, { icon, color, items }], i) => (
+          <Card key={cat} style={{ animation: `fadeUp 0.5s ${i * 0.08}s ease both`, opacity: 0, animationFillMode: "forwards" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}15`, border: `1px solid ${color}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{icon}</div>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: color }}>{cat}</div>
             </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 20, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "24px 32px" }}>
-          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>✦ Soft Skills</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            {["Problem Solving", "Team Collaboration", "Communication", "Leadership", "Critical Thinking", "Agile / Scrum"].map(s => (
-              <span key={s} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 500, padding: "7px 18px", borderRadius: 100, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)" }}>{s}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────── PAGE: CONTACT ─────────────── */
-function ContactPage() {
-  return (
-    <div style={{ minHeight: "100vh", padding: "120px 60px 80px", position: "relative", zIndex: 1, display: "flex", alignItems: "center" }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto", width: "100%" }}>
-        <PageHeader num="05" title="Get In" accent="Touch" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
-          <GlowCard color="#a855f7" padding="40px">
-            <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 32, fontWeight: 800, color: "white", marginBottom: 12, lineHeight: 1.2 }}>
-              Let's build something <span style={{ background: "linear-gradient(135deg, #a855f7, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>amazing</span> together
-            </div>
-            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.85, marginBottom: 28 }}>
-              Whether it's a research collaboration, internship, or a cool AI project — I'd love to hear from you!
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                { icon: "✉️", label: "Email", val: "sahupooja43890@gmail.com", color: "#a855f7" },
-                { icon: "📞", label: "Phone", val: "+91 9302445014", color: "#06b6d4" },
-                { icon: "📍", label: "Location", val: "Bhopal, Madhya Pradesh, India", color: "#10b981" },
-              ].map(item => (
-                <div key={item.label} style={{ display: "flex", gap: 14, alignItems: "center", padding: "14px 18px", background: `${item.color}10`, border: `1px solid ${item.color}25`, borderRadius: 12 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: `${item.color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17 }}>{item.icon}</div>
-                  <div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 10, fontWeight: 700, color: item.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{item.label}</div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>{item.val}</div>
-                  </div>
-                </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {items.map(skill => (
+                <span key={skill} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500,
+                  padding: "6px 14px", borderRadius: 8,
+                  background: C.bg, border: `1px solid ${C.border}`,
+                  color: C.ink2, cursor: "default", transition: "all 0.2s",
+                }}
+                  onMouseEnter={e => { e.target.style.background = `${color}10`; e.target.style.borderColor = `${color}40`; e.target.style.color = color; e.target.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.target.style.background = C.bg; e.target.style.borderColor = C.border; e.target.style.color = C.ink2; e.target.style.transform = "translateY(0)"; }}
+                >{skill}</span>
               ))}
             </div>
-          </GlowCard>
+          </Card>
+        ))}
+      </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* Soft skills */}
+      <Card>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, marginBottom: 16 }}>Professional Skills</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {["Problem Solving", "Team Collaboration", "Communication", "Leadership", "Critical Thinking", "Agile / Scrum", "Research & Analysis", "Presentation Skills"].map(s => (
+            <span key={s} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 500, padding: "8px 18px", borderRadius: 100, background: `linear-gradient(135deg, rgba(14,165,233,0.06), rgba(59,130,246,0.04))`, border: `1px solid ${C.border}`, color: C.ink2 }}>{s}</span>
+          ))}
+        </div>
+      </Card>
+    </PageLayout>
+  );
+}
+
+/* ── CONTACT PAGE ── */
+function ContactPage() {
+  return (
+    <PageLayout>
+      <SectionHeader num="05" title="Get In Touch" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+        {/* Left */}
+        <Card padding="40px">
+          <div style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 700, color: C.navy, lineHeight: 1.25, marginBottom: 14 }}>
+            Let's build something <span style={{ color: C.blue }}>great</span> together
+          </div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: C.ink2, lineHeight: 1.85, marginBottom: 28 }}>
+            I'm actively looking for internships, full-time roles, and research collaborations at top technology companies. Whether you have an exciting opportunity or just want to connect — I'd love to hear from you!
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { icon: "💼", platform: "LinkedIn", desc: "Connect professionally", color: "#0077b5", url: "https://www.linkedin.com/in/pooja-sahu-54b5a7281/" },
-              { icon: "⌥", platform: "GitHub", desc: "Explore my repositories", color: "#a855f7", url: "https://github.com/Pooja0726" },
-              { icon: "◈", platform: "LeetCode", desc: "See my problem solutions", color: "#f59e0b", url: "https://leetcode.com/u/phius12345/" },
-            ].map(link => (
-              <a key={link.platform} href={link.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 18,
-                  padding: "22px 26px", background: "rgba(255,255,255,0.03)",
-                  border: `1px solid ${link.color}30`, borderRadius: 16,
-                  transition: "all 0.3s", cursor: "pointer",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateX(8px)"; e.currentTarget.style.background = `${link.color}10`; e.currentTarget.style.borderColor = `${link.color}55`; e.currentTarget.style.boxShadow = `0 0 30px ${link.color}20`; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "translateX(0)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = `${link.color}30`; e.currentTarget.style.boxShadow = "none"; }}
-                >
-                  <div style={{ width: 50, height: 50, borderRadius: 14, background: `${link.color}20`, border: `1px solid ${link.color}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: link.color }}>{link.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 17, fontWeight: 700, color: "white" }}>{link.platform}</div>
-                    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.45)" }}>{link.desc}</div>
-                  </div>
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 20 }}>→</span>
+              { icon: "✉️", label: "Email", val: "sahupooja43890@gmail.com", href: "mailto:sahupooja43890@gmail.com", color: C.blue },
+              { icon: "📞", label: "Phone", val: "+91 9302445014", href: "tel:9302445014", color: C.blue2 },
+              { icon: "📍", label: "Location", val: "Bhopal, Madhya Pradesh, India", href: null, color: C.accent },
+            ].map(item => (
+              <div key={item.label} style={{ display: "flex", gap: 14, alignItems: "center", padding: "14px 18px", background: `${item.color}07`, border: `1px solid ${item.color}20`, borderRadius: 12, transition: "all 0.2s", cursor: item.href ? "pointer" : "default" }}
+                onClick={() => item.href && window.open(item.href)}
+                onMouseEnter={e => { if (item.href) { e.currentTarget.style.borderColor = `${item.color}50`; e.currentTarget.style.background = `${item.color}12`; } }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = `${item.color}20`; e.currentTarget.style.background = `${item.color}07`; }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${item.color}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{item.icon}</div>
+                <div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: item.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{item.label}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: C.navy }}>{item.val}</div>
                 </div>
-              </a>
-            ))}
-
-            <div style={{ marginTop: 8, padding: "22px 26px", background: "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(6,182,212,0.15))", border: "1px solid rgba(168,85,247,0.4)", borderRadius: 16, textAlign: "center" }}>
-              <div style={{ fontFamily: "'Exo 2', sans-serif", fontSize: 16, fontWeight: 700, color: "white", marginBottom: 6 }}>Currently Available</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>Open to internships, research collaborations &amp; freelance projects</div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12 }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 10px #10b981", animation: "pulse 2s infinite", display: "inline-block" }} />
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#34d399" }}>Available for hire</span>
               </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Right */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {[
+            { icon: "💼", platform: "LinkedIn", desc: "Let's connect professionally", color: "#0077b5", url: "https://www.linkedin.com/in/pooja-sahu-54b5a7281/" },
+            { icon: "⌥", platform: "GitHub", desc: "Browse my code & repositories", color: C.blue2, url: "https://github.com/Pooja0726" },
+            { icon: "◈", platform: "LeetCode", desc: "View my problem-solving profile", color: "#f59e0b", url: "https://leetcode.com/u/phius12345/" },
+          ].map(link => (
+            <a key={link.platform} href={link.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 18,
+                padding: "22px 26px", background: C.white,
+                border: `1px solid ${C.border}`, borderRadius: 16,
+                boxShadow: "0 2px 10px rgba(14,165,233,0.06)",
+                transition: "all 0.25s", cursor: "pointer",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateX(6px)"; e.currentTarget.style.borderColor = link.color; e.currentTarget.style.boxShadow = `0 8px 28px rgba(14,165,233,0.12)`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateX(0)"; e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "0 2px 10px rgba(14,165,233,0.06)"; }}
+              >
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: `${link.color}12`, border: `1px solid ${link.color}25`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: link.color, flexShrink: 0 }}>{link.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, color: C.navy }}>{link.platform}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: C.muted }}>{link.desc}</div>
+                </div>
+                <span style={{ color: C.blue, fontSize: 18, fontWeight: 700 }}>→</span>
+              </div>
+            </a>
+          ))}
+
+          {/* Available card */}
+          <div style={{ padding: "24px 28px", background: `linear-gradient(135deg, ${C.blue}, ${C.blue2})`, borderRadius: 16, textAlign: "center", boxShadow: `0 8px 28px rgba(14,165,233,0.3)` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", boxShadow: "0 0 0 3px rgba(74,222,128,0.3)" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.9)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Currently Available</span>
             </div>
+            <div style={{ fontFamily: "Georgia, serif", fontSize: 16, fontWeight: 700, color: "white", marginBottom: 6 }}>Open to New Opportunities</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: "rgba(255,255,255,0.75)" }}>Internships · Research · Full-time roles</div>
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 
-/* ─────────────── HELPERS ─────────────── */
-function PageHeader({ num, title, accent }) {
+/* ── HELPERS ── */
+function PageLayout({ children }) {
   return (
-    <div style={{ marginBottom: 52 }}>
-      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(168,85,247,0.7)", marginBottom: 12, display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontFamily: "'Exo 2', sans-serif", color: "#a855f7" }}>{num}</span>
-        <div style={{ height: 1, width: 40, background: "linear-gradient(to right, #a855f7, transparent)" }} />
-        <span>Section</span>
-      </div>
-      <h2 style={{ fontFamily: "'Exo 2', sans-serif", fontSize: "clamp(32px, 4vw, 56px)", fontWeight: 900, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
-        <span style={{ color: "white" }}>{title} </span>
-        <span style={{ background: "linear-gradient(135deg, #a855f7, #06b6d4)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{accent}</span>
-      </h2>
+    <div style={{ minHeight: "100vh", padding: "100px 64px 80px", position: "relative" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto" }}>{children}</div>
     </div>
   );
 }
 
-function GlowCard({ children, color = "#a855f7", padding = "32px" }) {
+function SectionHeader({ num, title }) {
+  return (
+    <div style={{ marginBottom: 48 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 800, color: C.blue, letterSpacing: "0.2em" }}>{num}</span>
+        <div style={{ height: 2, width: 40, background: `linear-gradient(to right, ${C.blue}, transparent)`, borderRadius: 2 }} />
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.15em" }}>Section</span>
+      </div>
+      <h2 style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "clamp(28px, 3.5vw, 48px)", fontWeight: 700, color: C.navy, letterSpacing: "-0.02em", lineHeight: 1.1 }}>{title}</h2>
+    </div>
+  );
+}
+
+function Card({ children, padding = "28px 32px", style = {} }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.03)", border: `1px solid ${color}30`,
-      borderRadius: 20, padding,
-      boxShadow: `0 0 30px ${color}15`,
-      transition: "box-shadow 0.3s",
-      position: "relative", overflow: "hidden",
-    }}>
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${color}, transparent)` }} />
-      {children}
-    </div>
+      background: C.white, border: `1px solid ${C.border}`,
+      borderRadius: 18, padding,
+      boxShadow: "0 4px 20px rgba(14,165,233,0.07)",
+      ...style,
+    }}>{children}</div>
   );
 }
 
-/* ─────────────── ROOT APP ─────────────── */
+/* ── ROOT APP ── */
 export default function App() {
   const [page, setPage] = useState("Home");
 
@@ -650,49 +703,44 @@ export default function App() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #07051a; color: white; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #07051a; }
-        ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.5); border-radius: 2px; }
-        @keyframes twinkle { from{opacity:0} to{opacity:0.9} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(0.7);opacity:0.5} }
-        @keyframes float1 { from{transform:translate(0,0)} to{transform:translate(30px,40px)} }
-        @keyframes float2 { from{transform:translate(0,0)} to{transform:translate(-40px,-30px)} }
-        @keyframes float3 { from{transform:translate(0,0)} to{transform:translate(20px,-25px)} }
-        @keyframes orbit { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes rotateBorder { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        body { background: #f0f9ff; color: #1e3a5f; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f0f9ff; }
+        ::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 3px; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
 
-      <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 900px 700px at 15% 10%, rgba(88,28,220,0.25) 0%, transparent 60%), radial-gradient(ellipse 700px 600px at 85% 80%, rgba(6,182,212,0.12) 0%, transparent 60%), #07051a", zIndex: 0 }} />
-      <Stars />
-      <GridLines />
-      <Orbs />
+      {/* Subtle background pattern */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", opacity: 0.4,
+        backgroundImage: "radial-gradient(circle, #bae6fd 1px, transparent 1px)",
+        backgroundSize: "40px 40px" }} />
 
-      <Nav active={page} setPage={setPage} />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <Nav page={page} setPage={setPage} />
 
-      <div key={page} style={{ animation: "fadeUp 0.5s ease both" }}>
-        {pages[page]}
-      </div>
+        <div key={page} style={{ animation: "fadeUp 0.4s ease both" }}>
+          {pages[page]}
+        </div>
 
-      {/* Bottom dot navigation */}
-      <div style={{
-        position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)",
-        display: "flex", gap: 8, zIndex: 1000,
-        background: "rgba(7,5,26,0.85)", backdropFilter: "blur(20px)",
-        border: "1px solid rgba(168,85,247,0.25)", borderRadius: 100, padding: "8px 16px",
-      }}>
-        {NAV_LINKS.map((l) => (
-          <button key={l} onClick={() => setPage(l)} title={l} style={{
-            width: page === l ? 28 : 8, height: 8, borderRadius: 100,
-            background: page === l ? "linear-gradient(to right, #a855f7, #06b6d4)" : "rgba(255,255,255,0.2)",
-            border: "none", cursor: "pointer",
-            transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
-            boxShadow: page === l ? "0 0 10px rgba(168,85,247,0.7)" : "none",
-          }} />
-        ))}
+        {/* Footer */}
+        <footer style={{ borderTop: `1px solid ${C.border}`, padding: "24px 64px", display: "flex", alignItems: "center", justifyContent: "space-between", background: C.white }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.muted }}>© 2025 Pooja Sahu · AI/ML Engineer</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            {NAV.map(l => (
+              <button key={l} onClick={() => setPage(l)} style={{
+                width: page === l ? 24 : 7, height: 7, borderRadius: 100,
+                background: page === l ? `linear-gradient(to right, ${C.blue}, ${C.blue2})` : C.border,
+                border: "none", cursor: "pointer",
+                transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)",
+                boxShadow: page === l ? `0 2px 8px rgba(14,165,233,0.4)` : "none",
+              }} title={l} />
+            ))}
+          </div>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.muted }}>Bhopal, India 🇮🇳</span>
+        </footer>
       </div>
     </>
   );
